@@ -50,38 +50,6 @@ vim.opt.rtp:prepend(lazypath)
 -- PLUGINS
 --------------------------------------------------
 require("lazy").setup({
-  -- Treesitter (DOWNGRADED TO MASTER BRANCH)
-  {
-    "nvim-treesitter/nvim-treesitter",
-    branch = "main",
-    build = ":TSUpdate",
-    opts = {
-      ensure_installed = { "c", "cpp", "c3", "markdown", "markdown_inline" },
-      auto_install = true,
-      highlight = { enable = true },
-    },
-    config = function(_, opts)
-      local ok, ts = pcall(require, "nvim-treesitter.configs")
-      if not ok then
-        vim.notify("nvim-treesitter not installed; run :Lazy sync", vim.log.levels.WARN)
-        return
-      end
-      -- Register external parser for C3 (https://github.com/c3lang/tree-sitter-c3)
-      local parsers_ok, parsers = pcall(require, "nvim-treesitter.parsers")
-      if parsers_ok then
-        local parser_config = parsers.get_parser_configs()
-        parser_config.c3 = {
-          install_info = {
-            url = "https://github.com/c3lang/tree-sitter-c3",
-            files = { "src/parser.c" },
-            branch = "main",
-          },
-          filetype = "c3",
-        }
-      end
-      ts.setup(opts)
-    end,
-  },
 
   -- LSP core
   { "neovim/nvim-lspconfig" },
@@ -95,6 +63,7 @@ require("lazy").setup({
   { "preservim/nerdcommenter" },
   { "mhinz/vim-startify" }
 })
+
 
 --------------------------------------------------
 -- COLORSCHEME
@@ -115,6 +84,7 @@ vim.api.nvim_create_autocmd({"BufRead","BufNewFile"}, {
     vim.bo.filetype = "c3"
   end,
 })
+
 
 --------------------------------------------------
 -- KEYMAPS
@@ -166,7 +136,11 @@ map("n", "<leader>e", "<cmd>lua vim.diagnostic.open_float()<CR>", opts)
 
 map("n", "<leader>li", ":LspInfo<CR>", opts)
 
--- Configure c3 LSP if available
+--------------------------------------------------
+-- LSP SETTINGS
+--------------------------------------------------
+
+-- Configure C3 Language Server
 local lsp_ok, lspconfig = pcall(require, "lspconfig")
 if lsp_ok then
   local configs = require("lspconfig.configs")
