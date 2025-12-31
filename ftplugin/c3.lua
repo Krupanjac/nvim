@@ -13,9 +13,13 @@ end
 -- Attach on load
 safe_attach()
 
--- Enable folding and indentation powered by treesitter (experimental features)
+-- Disable folding by default for c3 buffers (user requested)
+-- Keep treesitter-based folding available but turned off so code is visible on open
 pcall(function()
+  vim.wo.foldenable = false
+  -- keep the foldmethod/expr available if the user wants to enable later
   vim.wo.foldmethod = 'expr'
   vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+  -- keep treesitter indentation enabled
   vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
 end)
