@@ -147,6 +147,24 @@ require("lazy").setup({
     -- plugin uses default config; you may customize if needed
   },
 
+  -- Smooth scrolling (neoscroll.nvim)
+  {
+    "karb94/neoscroll.nvim",
+    event = "WinScrolled",
+    config = function()
+      require('neoscroll').setup({
+        -- mappings to enable smooth scrolling on
+        mappings = { '<C-u>', '<C-d>', '<C-b>', '<C-f>', '<C-y>', '<C-e>', 'zt', 'zz', 'zb' },
+        hide_cursor = true,
+        stop_eof = true,
+        respect_scrolloff = false,
+        cursor_scrolls_alone = true,
+        easing_function = "cubic",
+      })
+    end,
+  },
+
+
   -- Theme & UI
   { "dracula/vim" },
   { "ryanoasis/vim-devicons" },
@@ -156,6 +174,36 @@ require("lazy").setup({
   { "preservim/nerdcommenter" },
   { "mhinz/vim-startify" },
   { "github/copilot.vim" },
+  {
+    "sphamba/smear-cursor.nvim",
+    opts = {
+      smear_between_buffers = true,
+      smear_between_neighbor_lines = true,
+      scroll_buffer_space = true,
+      legacy_computing_symbols_support = false,
+      smear_insert_mode = true,
+    },
+    config = function(_, opts)
+      local ok, m = pcall(require, "smear_cursor")
+      if not ok then
+        vim.notify("smear_cursor not available", vim.log.levels.WARN)
+        return
+      end
+      if type(m.setup) == "function" then
+        m.setup(opts or {})
+      end
+      -- Ensure smear-cursor is enabled on startup. If the module exposes
+      -- a boolean `enabled` field set it; otherwise call `toggle()` once
+      -- to activate when appropriate.
+      if m.enabled == nil then
+        if type(m.toggle) == "function" then
+          pcall(m.toggle)
+        end
+      else
+        m.enabled = true
+      end
+    end,
+  },
 })
 
 --------------------------------------------------
